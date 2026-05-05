@@ -19,7 +19,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd backend
+        cd back-end
         pip install -r requirements.txt
 
     - name: Run app test
