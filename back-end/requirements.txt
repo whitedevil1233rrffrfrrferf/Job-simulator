@@ -1,7 +1,18 @@
+## This file lists the Python dependencies for the back-end of the application. It includes FastAPI for building the API, Uvicorn as the ASGI server, and python-dotenv for managing environment variables. Additionally, it includes LangChain and its related packages for integrating with language models.
+## Web framework and server
 fastapi
 uvicorn
+
+## Environment variable management
+python-dotenv
+
+## For LLM integration
 langchain
 langchain-ollama
 langchain-groq
-python-dotenv
 langchain-core
+
+## uploading and reading files
+python-multipart
+pdfplumber 
+python-docx
