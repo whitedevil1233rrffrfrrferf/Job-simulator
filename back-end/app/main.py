@@ -2,12 +2,17 @@ from fastapi import FastAPI
 import uvicorn
 from db.session import Base, engine
 from models.resume import Resume
+from models.job_match import JobMatch
 from routes.resume import router as resume_router
+from routes.analyse_job import router as analyze_job_router  # Import the analyze-job router
+from routes.job_match import router as job_match_router  # Import the job-match router
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 app.include_router(resume_router)
+app.include_router(analyze_job_router)  # Include the analyze-job router
+app.include_router(job_match_router)  # Include the job-match router
 
 @app.get("/")
 def root():
