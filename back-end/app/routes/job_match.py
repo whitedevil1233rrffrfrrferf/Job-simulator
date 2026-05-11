@@ -2,13 +2,15 @@ from fastapi import HTTPException, APIRouter, Depends
 from sqlalchemy.orm import Session
 from db.session import get_db
 from services.job_match import match_resume_to_job
+from schemas.job_match import JobMatchRequest
+
 router = APIRouter(prefix="/match", tags=["match"])
 
 @router.post("/")
-def match_job(resume_id: int, job_description: str, db: Session = Depends(get_db)):
+def match_job(job_match_request: JobMatchRequest, db: Session = Depends(get_db)):
 
     return match_resume_to_job(
-        resume_id=resume_id,
-        job_description=job_description,
+        resume_id=job_match_request.resume_id,
+        job_description=job_match_request.job_description,
         db=db
     )
