@@ -3,11 +3,13 @@ import uvicorn
 from db.session import Base, engine
 from models.resume import Resume
 from models.job_match import JobMatch
+from core.middleware import setup_cors
 from routes.resume import router as resume_router
 from routes.analyse_job import router as analyze_job_router  # Import the analyze-job router
 from routes.job_match import router as job_match_router  # Import the job-match router
 
 app = FastAPI()
+setup_cors(app)
 Base.metadata.create_all(bind=engine)
 
 app.include_router(resume_router)
