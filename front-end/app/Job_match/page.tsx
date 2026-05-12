@@ -1,6 +1,6 @@
 "use client";
 import {api} from "../lib/api";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type MatchResult = {
     match_score: number;
@@ -18,6 +18,9 @@ export default function Home() {
     const [jobDescription, setJobDescription] =
         useState("");
 
+    const [status, setStatus] = 
+        useState<string>("");
+
     const [loading, setLoading] =
         useState(false);
 
@@ -27,6 +30,40 @@ export default function Home() {
     const [result, setResult] =
         useState<MatchResult | null>(null);
 
+    const wsRef = useRef<WebSocket | null>(null);
+        
+    // useEffect(() => {
+
+    //     if (!resumeId) return;
+
+    //     const ws = new WebSocket(
+    //         `ws://localhost:8000/ws/${resumeId}`
+    //     );
+
+    //     ws.onmessage = (event) => {
+
+    //         const data = JSON.parse(event.data);
+
+    //         // LIVE STEP UPDATES
+    //         if (data.step) {
+    //             setStatus(data.step);
+    //         }
+
+    //         // FINAL RESULT FROM BACKEND
+    //         if (data.result) {
+    //             setResult(data.result);
+    //         }
+
+    //     };
+
+    //     ws.onerror = () => {
+    //         setError("WebSocket connection failed");
+    //     };
+
+    //     return () => ws.close();
+
+    // }, [resumeId]);
+
     const handleSubmit = async () => {
 
     try {
@@ -34,30 +71,54 @@ export default function Home() {
         setLoading(true);
         setError("");
         setResult(null);
+        setStatus("");
 
-        const data = await api.matchJob(
+        // 1. OPEN WS FIRST
+        const ws = new WebSocket(
+            `ws://localhost:8000/ws/${resumeId}`
+        );
+
+        wsRef.current = ws;
+
+        ws.onmessage = (event) => {
+
+            const data = JSON.parse(event.data);
+
+            if (data.step) {
+                setStatus(data.step);
+            }
+
+            if (data.result) {
+                setResult(data.result);
+            }
+        };
+
+        ws.onerror = () => {
+            setError("WebSocket failed");
+        };
+
+        // WAIT FOR CONNECTION READY (IMPORTANT)
+        await new Promise((resolve) => {
+            ws.onopen = resolve;
+        });
+
+        // 2. NOW CALL API
+        await api.matchJob(
             Number(resumeId),
             jobDescription
         );
 
-        setResult(data);
+    } catch (err: any) {
 
-    } catch (err: unknown) {
-
-        setError(
-            err instanceof Error
-                ? err.message
-                : "Failed to analyze ATS match"
-        );
+        setError(err.message || "Error");
 
     } finally {
 
         setLoading(false);
-
     }
-
 };
 
+   
     const matchedSkills = result?.matched_skills ?? [];
     const missingSkills = result?.missing_skills ?? [];
     const recommendations = result?.recommendations ?? [];
@@ -171,7 +232,11 @@ export default function Home() {
                                         ? "Analyzing..."
                                         : "Analyze Match"}
                                 </button>
-
+                                    {status && (
+                                        <div className="mt-4 rounded-md border border-cyan-400/20 bg-cyan-400/10 p-3 text-sm text-cyan-100">
+                                            <p>Current Step: {status}</p>
+                                        </div>
+                                    )}            
                                 {error && (
 
                                     <div className="rounded-md border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100">
