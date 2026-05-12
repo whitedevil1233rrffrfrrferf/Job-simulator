@@ -20,7 +20,7 @@ async def match_resume_to_job(resume_id: int, job_description: str, db: Session)
         "step": "retrieving_context"
     })
 
-    # 🔥 FIX 1: move FAISS to thread
+    
     resume_context = await asyncio.to_thread(
         get_resume_context,
         resume_id,
