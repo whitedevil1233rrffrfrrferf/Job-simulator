@@ -8,7 +8,7 @@ from routes.resume import router as resume_router
 from routes.analyse_job import router as analyze_job_router  # Import the analyze-job router
 from routes.job_match import router as job_match_router  # Import the job-match router
 from routes.ws_manager import router as ws_router  # Import the WebSocket router
-
+from routes.resume_improvement import router as resume_improvement_router  # Import the resume improvement router
 app = FastAPI()
 setup_cors(app)
 Base.metadata.create_all(bind=engine)
@@ -17,6 +17,7 @@ app.include_router(resume_router)
 app.include_router(analyze_job_router)  # Include the analyze-job router
 app.include_router(job_match_router)  # Include the job-match router
 app.include_router(ws_router)
+app.include_router(resume_improvement_router)  # Include the resume improvement router
 
 @app.get("/")
 def root():

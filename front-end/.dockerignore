@@ -1,4 +1,10 @@
 
-frontend/node_modules
-frontend/dist
-frontend/.next
+node_modules
+.next
+dist
+
+.env
+.env*.local
+npm-debug.log*
+Dockerfile
+.dockerignore
