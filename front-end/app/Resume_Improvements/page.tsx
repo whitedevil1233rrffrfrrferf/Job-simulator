@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {api} from "../lib/api";
 
 type ResumeImprovementResult = {
@@ -13,9 +13,16 @@ type ResumeImprovementResult = {
 
 export default function ResumeImprovementPage() {
 
+    const wsRef = useRef<WebSocket | null>(null);
+
     const [resumeId, setResumeId] = useState("");
 
     const [jobDescription, setJobDescription] = useState("");
+
+    const [status, setStatus] =
+    useState("");
+
+    
 
     const [loading, setLoading] = useState(false);
 
@@ -34,6 +41,47 @@ export default function ResumeImprovementPage() {
 
             setResult(null);
 
+            setStatus("");
+
+            // OPEN WS FIRST
+
+            const ws = new WebSocket(
+                `ws://localhost:8000/ws/${resumeId}`
+            );
+
+            wsRef.current = ws;
+
+            ws.onmessage = (event) => {
+
+                const data = JSON.parse(
+                    event.data
+                );
+
+                // STEP UPDATES
+
+                if (data.step) {
+                    setStatus(data.step);
+                }
+
+                // FINAL RESULT
+
+                if (data.result) {
+                    setResult(data.result);
+                }
+            };
+
+            ws.onerror = () => {
+
+                setError(
+                    "WebSocket failed"
+                );
+            };
+
+        // WAIT FOR CONNECTION
+
+        await new Promise((resolve) => {
+            ws.onopen = resolve;
+        });
             const data =
                 await api.generateResumeImprovements(
                     Number(resumeId),
@@ -276,7 +324,17 @@ export default function ResumeImprovementPage() {
                     </section>
 
                 )}
+                {status && (
 
+                <div className="mt-4 rounded-md border border-cyan-400/20 bg-cyan-400/10 p-3 text-sm text-cyan-100">
+
+                    <p>
+                        Current Step: {status}
+                    </p>
+
+                </div>
+
+            )}
             </div>
 
         </main>
