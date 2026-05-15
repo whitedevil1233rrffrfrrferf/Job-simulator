@@ -69,5 +69,32 @@ export const api = {
         return res.json();
 
     },
+    generateCoverLetter: async (
+        resume_id: number,
+        job_description: string
+    ) => {
+
+        const res = await fetch(
+        `${BASE_URL}/cover-letter/generate`,
+        {
+            method: "POST",
+
+            headers: getHeaders(),
+
+            body: JSON.stringify({
+            resume_id,
+            job_description,
+            }),
+        }
+        );
+
+        if (!res.ok) {
+        throw new Error(
+            "Failed to generate cover letter"
+        );
+        }
+
+        return res.json();
+    },
 
 };

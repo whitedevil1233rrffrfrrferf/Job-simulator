@@ -1,4 +1,5 @@
 import asyncio
+from unittest import result
 from services.FAISS import get_resume_context
 from chains.cover_letter_chain import cover_letter_chain
 from core.ws_manager import manager
@@ -36,7 +37,7 @@ async def generate_cover_letter(resume_id: int, job_description: str):
             "job_description": job_description
         }
     )
-
+    print(result)
     # STEP 3
     await manager.send(
         resume_id,
@@ -46,8 +47,6 @@ async def generate_cover_letter(resume_id: int, job_description: str):
         }
     )
 
-    return {
-        "cover_letter": result
-    }
+    return result
         
 
