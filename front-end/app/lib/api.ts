@@ -39,6 +39,7 @@ export const api = {
         return res.json();
 
     },
+
     generateResumeImprovements: async (
         resume_id: number,
         job_description: string
@@ -69,6 +70,7 @@ export const api = {
         return res.json();
 
     },
+
     generateCoverLetter: async (
         resume_id: number,
         job_description: string
@@ -96,5 +98,24 @@ export const api = {
 
         return res.json();
     },
+
+    askQuestion: async (resume_id: number, question: string) => {
+        const body = JSON.stringify({ resume_id, question });
+        
+        console.log("URL:", `${BASE_URL}/chat/ask`);
+        console.log("Body:", body);  // Make sure this looks right
+        
+        const res = await fetch(`${BASE_URL}/chat/ask`, {
+            method: "POST",
+            headers: getHeaders(),
+            body,
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            console.error("422 detail:", err); // This tells you EXACTLY what field is wrong
+            throw new Error("Failed");
+        }
+    }
 
 };
